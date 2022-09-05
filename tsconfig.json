@@ -19,5 +19,6 @@
     "noFallthroughCasesInSwitch": false,
     "downlevelIteration": true,
     "preserveConstEnums": true
-  }
+  },
+  "include": ["src/**/*"],
 }
