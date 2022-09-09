@@ -3,11 +3,12 @@ import { EntityTracker } from './entity.interface';
 export interface CreateProduct {
   name: string;
   price: number;
-  description: string;
-  promotionPrice: number;
-  isAvailable: boolean;
+  promotionPrice: number | null;
+  description?: string;
+  isAvailable?: boolean;
 }
 
 export interface Product extends CreateProduct, EntityTracker {
   id: string;
+  isAvailable: boolean;
 }
