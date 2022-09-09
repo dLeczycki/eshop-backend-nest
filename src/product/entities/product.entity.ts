@@ -1,3 +1,4 @@
+import { AutoMap } from '@automapper/classes';
 import {
   BaseEntity,
   Column,
@@ -10,9 +11,11 @@ import { Product as ProductI } from '../../types';
 
 @Entity()
 export class Product extends BaseEntity implements ProductI {
+  @AutoMap()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @AutoMap()
   @Column({
     type: 'varchar',
     length: '128',
@@ -20,11 +23,13 @@ export class Product extends BaseEntity implements ProductI {
   })
   name: string;
 
+  @AutoMap()
   @Column({
     type: 'text',
   })
   description: string;
 
+  @AutoMap()
   @Column({
     type: 'decimal',
     precision: 7,
@@ -32,6 +37,7 @@ export class Product extends BaseEntity implements ProductI {
   })
   price: number;
 
+  @AutoMap()
   @Column({
     type: 'decimal',
     precision: 7,
@@ -40,18 +46,21 @@ export class Product extends BaseEntity implements ProductI {
   })
   promotionPrice: number;
 
+  @AutoMap()
   @Column({
     type: 'boolean',
     default: true,
   })
   isAvailable: boolean;
 
+  @AutoMap()
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
 
+  @AutoMap()
   @UpdateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',

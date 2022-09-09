@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { config } from '../config/config';
 import { ProductModule } from '../product/product.module';
+import { AutomapperModule } from '@automapper/nestjs';
+import { classes } from '@automapper/classes';
 
 @Module({
   imports: [
@@ -17,6 +19,9 @@ import { ProductModule } from '../product/product.module';
       bigNumberStrings: false,
       logging: config.database.logging,
       synchronize: config.database.synchronize,
+    }),
+    AutomapperModule.forRoot({
+      strategyInitializer: classes(),
     }),
     ProductModule,
   ],
