@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -8,7 +9,7 @@ import {
 import { Product as ProductI } from '../../types';
 
 @Entity()
-export class Product implements ProductI {
+export class Product extends BaseEntity implements ProductI {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
