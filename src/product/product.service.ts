@@ -1,6 +1,8 @@
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/types';
 import { Injectable } from '@nestjs/common';
+import { Like } from 'typeorm';
+import { DEFAULT_PRODUCT_SKIP, DEFAULT_PRODUCT_TAKE } from '../utils/constants';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -22,8 +24,21 @@ export class ProductService {
     return product;
   }
 
-  async findAll(): Promise<Product[]> {
-    return await Product.find();
+  async findAll(
+    take = DEFAULT_PRODUCT_TAKE,
+    skip = DEFAULT_PRODUCT_SKIP,
+    keyword = '',
+  ): Promise<{ products: Product[]; total: number }> {
+    const [products, total] = await Product.findAndCount({
+      take,
+      skip,
+      where: [
+        { name: Like(`%${keyword}%`) },
+        { description: Like(`%${keyword}%`) },
+      ],
+    });
+
+    return { products, total };
   }
 
   async findOne(id: string): Promise<Product> {
