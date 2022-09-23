@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Product } from '../product/entities/product.entity';
 import { UploadFiles } from '../types';
-import { publicImageDir } from '../utils/storage';
+import { saveMulterFileWithExtension, publicImageDir } from '../utils/storage';
 
 @Controller('image')
 export class ImageController {
@@ -25,7 +25,7 @@ export class ImageController {
         },
       ],
       {
-        dest: publicImageDir(),
+        storage: saveMulterFileWithExtension(publicImageDir()),
       },
     ),
   )
@@ -38,7 +38,7 @@ export class ImageController {
     try {
       const product = await Product.findOne(productId);
 
-      if (!product) throw new HttpException('', 404);
+      // if (!product) throw new HttpException('', 404);
     } catch (e) {
       if (image) fs.unlinkSync(path.join(publicImageDir(), image.filename));
       throw e;
