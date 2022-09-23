@@ -12,9 +12,12 @@ import * as path from 'path';
 import { Product } from '../product/entities/product.entity';
 import { UploadFiles } from '../types';
 import { saveMulterFileWithExtension, publicImageDir } from '../utils/storage';
+import { ImageService } from './image.service';
 
 @Controller('image')
 export class ImageController {
+  constructor(private readonly imageService: ImageService) {}
+
   @Post('/product/:productId')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -38,7 +41,9 @@ export class ImageController {
     try {
       const product = await Product.findOne(productId);
 
-      // if (!product) throw new HttpException('', 404);
+      if (!product) throw new HttpException('', 404);
+
+      return this.imageService.create(image, productId);
     } catch (e) {
       if (image) fs.unlinkSync(path.join(publicImageDir(), image.filename));
       throw e;
