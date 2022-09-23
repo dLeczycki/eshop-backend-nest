@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { config } from '../config/config';
-import { ProductModule } from '../product/product.module';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
+
+import { config } from '../config/config';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { ProductModule } from '../product/product.module';
+import { ImageModule } from '../image/image.module';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { classes } from '@automapper/classes';
       strategyInitializer: classes(),
     }),
     ProductModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
