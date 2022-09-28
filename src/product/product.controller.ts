@@ -6,14 +6,14 @@ import {
   Patch,
   Param,
   Delete,
-  HttpException,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
@@ -35,7 +35,7 @@ export class ProductController {
   async findOne(@Param('id') id: string) {
     const product = await this.productService.findOne(id);
 
-    if (!product) throw new HttpException({}, 404);
+    if (!product) throw new NotFoundException();
 
     return product;
   }
@@ -48,5 +48,21 @@ export class ProductController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productService.remove(id);
+  }
+
+  @Post(':id/images/:imageName')
+  async addImageToProduct(
+    @Param('id') id: string,
+    @Param('imageName') imageName: string,
+  ) {
+    return this.productService.addImageToProduct(id, imageName);
+  }
+
+  @Delete(':id/images/:imageName')
+  async removeImageFromProduct(
+    @Param('id') id: string,
+    @Param('imageName') imageName: string,
+  ) {
+    return this.productService.removeImageFromProduct(id, imageName);
   }
 }

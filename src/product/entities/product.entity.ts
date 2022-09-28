@@ -4,9 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Image } from '../../image/entities/image.entity';
 import { Product as ProductI } from '../../types';
 
 @Entity()
@@ -67,4 +70,10 @@ export class Product extends BaseEntity implements ProductI {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  @ManyToMany(() => Image, (entity) => entity.products, { eager: true })
+  @JoinTable({
+    name: 'product-images',
+  })
+  images: Image[];
 }
