@@ -1,24 +1,30 @@
 import {
   Controller,
-  HttpException,
+  Delete,
+  Get,
   Param,
   Post,
   UploadedFiles,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Product } from '../product/entities/product.entity';
+import { FileExceptionFilter } from '../filters/file-exception.filter';
+import { GlobalExceptionFilter } from '../filters/global-exception.filter';
 import { UploadFiles } from '../types';
 import { saveMulterFileWithExtension, publicImageDir } from '../utils/storage';
 import { ImageService } from './image.service';
 
-@Controller('image')
+@Controller('images')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
-  @Post('/product/:productId')
+  @Get()
+  async findAll() {
+    return this.imageService.findAll();
+  }
+
+  @Post()
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -32,21 +38,15 @@ export class ImageController {
       },
     ),
   )
-  async uploadProductImage(
-    @Param('productId') productId: string,
-    @UploadedFiles() files: UploadFiles,
-  ) {
+  @UseFilters(GlobalExceptionFilter, FileExceptionFilter)
+  async uploadImage(@UploadedFiles() files: UploadFiles) {
     const image = files?.images[0] ?? null;
 
-    try {
-      const product = await Product.findOne(productId);
+    return this.imageService.create(image);
+  }
 
-      if (!product) throw new HttpException('', 404);
-
-      return this.imageService.create(image, productId);
-    } catch (e) {
-      if (image) fs.unlinkSync(path.join(publicImageDir(), image.filename));
-      throw e;
-    }
+  @Delete('/:name')
+  async removeImage(@Param('name') name: string) {
+    return this.imageService.remove(name);
   }
 }

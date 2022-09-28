@@ -1,6 +1,6 @@
 export interface Image {
   name: string;
-  productId: string;
+  extension: string;
 }
 
 export interface UploadFiles {
