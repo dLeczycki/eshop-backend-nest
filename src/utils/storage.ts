@@ -22,7 +22,6 @@ export function saveMulterFileWithExtension(destination: string) {
   return diskStorage({
     destination: (req, file, cb) => cb(null, destination),
     filename: (req, file, cb) => {
-      console.log((mime as any)._extensions[file.mimetype]);
       cb(null, `${uuid()}.${(mime as any)._extensions[file.mimetype]}`);
     },
   });
