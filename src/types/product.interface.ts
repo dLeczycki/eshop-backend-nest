@@ -12,3 +12,8 @@ export interface Product extends CreateProduct, EntityTracker {
   id: string;
   isAvailable: boolean;
 }
+
+export interface FindAllProductsResponse {
+  products: Product[];
+  total: number;
+}

@@ -7,6 +7,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { Image } from '../image/entities/image.entity';
+import { FindAllProductsResponse } from '../types';
 
 @Injectable()
 export class ProductService {
@@ -29,7 +30,7 @@ export class ProductService {
     take = DEFAULT_PRODUCT_TAKE,
     skip = DEFAULT_PRODUCT_SKIP,
     keyword = '',
-  ): Promise<{ products: Product[]; total: number }> {
+  ): Promise<FindAllProductsResponse> {
     const [products, total] = await Product.findAndCount({
       take,
       skip,
