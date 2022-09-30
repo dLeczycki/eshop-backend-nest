@@ -20,13 +20,14 @@ export class CreateProductDto implements CreateProduct {
 
   @AutoMap()
   @IsOptional()
-  description: string;
+  description?: string;
 
   @AutoMap()
   @IsNumberString()
   @IsOptional()
-  promotionPrice: number;
+  promotionPrice?: number;
 
   @AutoMap()
-  isAvailable: boolean;
+  @IsOptional()
+  isAvailable?: boolean;
 }

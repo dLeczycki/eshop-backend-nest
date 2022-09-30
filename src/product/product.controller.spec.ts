@@ -4,9 +4,15 @@ import { classes } from '@automapper/classes';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { Product } from './entities/product.entity';
-import { SaveOptions, RemoveOptions } from 'typeorm';
 import { FindAllProductsResponse } from '../types';
 import { DEFAULT_PRODUCT_SKIP, DEFAULT_PRODUCT_TAKE } from '../utils/constants';
+import { CreateProductDto } from './dto/create-product.dto';
+import {
+  BAD_REQUEST_EXCEPTION_RESPONSE,
+  NOT_FOUND_EXCEPTION_RESPONSE,
+} from '../utils/http-exception-responses';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { SaveOptions, RemoveOptions } from 'typeorm';
 
 describe('ProductController', () => {
   let productService: ProductService;
@@ -30,37 +36,7 @@ describe('ProductController', () => {
     productController = productModule.get<ProductController>(ProductController);
   });
 
-  beforeEach(() => {
-    const entityHasIdMock = function (): boolean {
-      throw new Error('Function not implemented.');
-    };
-
-    const entitySaveMock = function (options?: SaveOptions): Promise<Product> {
-      throw new Error('Function not implemented.');
-    };
-
-    const entityRemoveMock = function (
-      options?: RemoveOptions,
-    ): Promise<Product> {
-      throw new Error('Function not implemented.');
-    };
-
-    const entitySoftRemoveMock = function (
-      options?: SaveOptions,
-    ): Promise<Product> {
-      throw new Error('Function not implemented.');
-    };
-
-    const entitySoftRecoverMock = function (
-      options?: SaveOptions,
-    ): Promise<Product> {
-      throw new Error('Function not implemented.');
-    };
-
-    const entityReloadMock = function (): Promise<void> {
-      throw new Error('Function not implemented.');
-    };
-
+  beforeAll(() => {
     firstMockProduct = {
       id: '657faa7c-38ba-4f33-bffc-2f20ea769dbe',
       name: 'Testowy produkt',
@@ -71,36 +47,36 @@ describe('ProductController', () => {
       createdAt: new Date('2022-09-09T09:01:41.043Z'),
       updatedAt: new Date('2022-09-20T11:38:36.000Z'),
       images: [],
-      hasId: entityHasIdMock,
-      save: entitySaveMock,
-      remove: entityRemoveMock,
-      softRemove: entitySoftRemoveMock,
-      recover: entitySoftRecoverMock,
-      reload: entityReloadMock,
+      hasId: jest.fn(),
+      save: jest.fn(),
+      remove: jest.fn(),
+      softRemove: jest.fn(),
+      recover: jest.fn(),
+      reload: jest.fn(),
     };
 
     secondMockProduct = {
       id: '657faa7c-38ba-4f33-bffc-2f20ea769dbe',
-      name: 'Testowy produkt',
-      description: 'Update opisu1',
-      price: 29.99,
+      name: 'Test product',
+      description: 'Short test product description',
+      price: 30.99,
       promotionPrice: null,
       isAvailable: true,
       createdAt: new Date('2022-09-09T09:01:41.043Z'),
       updatedAt: new Date('2022-09-20T11:38:36.000Z'),
       images: [],
-      hasId: entityHasIdMock,
-      save: entitySaveMock,
-      remove: entityRemoveMock,
-      softRemove: entitySoftRemoveMock,
-      recover: entitySoftRecoverMock,
-      reload: entityReloadMock,
+      hasId: jest.fn(),
+      save: jest.fn(),
+      remove: jest.fn(),
+      softRemove: jest.fn(),
+      recover: jest.fn(),
+      reload: jest.fn(),
     };
 
     mockProductsArray = [firstMockProduct, secondMockProduct, firstMockProduct];
   });
 
-  describe('findAll', () => {
+  describe('GET /products', () => {
     let response: FindAllProductsResponse;
     let take = DEFAULT_PRODUCT_TAKE;
     let skip = DEFAULT_PRODUCT_SKIP;
@@ -166,6 +142,151 @@ describe('ProductController', () => {
       expect(productController.findAll(take, skip, keyword)).resolves.toBe(
         response,
       );
+    });
+  });
+
+  describe('GET /products/:id', () => {
+    it('should return product with given id', async () => {
+      jest.spyOn(productService, 'findOne').mockImplementation(
+        (id) =>
+          new Promise((resolve, reject) => {
+            return resolve(firstMockProduct);
+          }),
+      );
+
+      expect(productController.findOne(firstMockProduct.id)).resolves.toBe(
+        firstMockProduct,
+      );
+    });
+
+    it('should return 404 when product with given id is not found', async () => {
+      jest.spyOn(productService, 'findOne').mockImplementation(
+        (id) =>
+          new Promise((resolve, reject) => {
+            return reject(NOT_FOUND_EXCEPTION_RESPONSE);
+          }),
+      );
+
+      expect(productController.findOne('wrong-id')).rejects.toBe(
+        NOT_FOUND_EXCEPTION_RESPONSE,
+      );
+    });
+  });
+
+  describe('POST /products', () => {
+    it('should return product entity', () => {
+      const mockRequestData: CreateProductDto = {
+        name: 'Test product',
+        price: 30.99,
+        description: 'Short test product description',
+      };
+      jest.spyOn(productService, 'create').mockImplementation(
+        () =>
+          new Promise((resolve, reject) => {
+            return resolve(secondMockProduct);
+          }),
+      );
+
+      expect(productController.create(mockRequestData)).resolves.toBe(
+        secondMockProduct,
+      );
+    });
+
+    it('should return status 400 and message when name is not defined', () => {
+      const mockRequestData: Omit<CreateProductDto, 'name'> = {
+        price: 30.99,
+        description: 'Short test product description',
+      };
+
+      jest.spyOn(productService, 'create').mockImplementation(
+        () =>
+          new Promise((resolve, reject) => {
+            return reject(NOT_FOUND_EXCEPTION_RESPONSE);
+          }),
+      );
+
+      expect(
+        productController.create(mockRequestData as CreateProductDto),
+      ).rejects.toBe(NOT_FOUND_EXCEPTION_RESPONSE);
+    });
+
+    it('should return status 400 and message when price is not defined', () => {
+      const mockRequestData: Omit<CreateProductDto, 'price'> = {
+        name: 'Test product',
+        description: 'Short test product description',
+      };
+
+      jest.spyOn(productService, 'create').mockImplementation(
+        () =>
+          new Promise((resolve, reject) => {
+            return reject(NOT_FOUND_EXCEPTION_RESPONSE);
+          }),
+      );
+
+      expect(
+        productController.create(mockRequestData as CreateProductDto),
+      ).rejects.toBe(NOT_FOUND_EXCEPTION_RESPONSE);
+    });
+  });
+
+  describe('PATCH /products/:id', () => {
+    let toUpdate: UpdateProductDto = {
+      description: 'Description update',
+    };
+
+    const updatedObject: Product = {
+      ...firstMockProduct,
+      description: toUpdate.description,
+      hasId: jest.fn(),
+      save: jest.fn(),
+      remove: jest.fn(),
+      softRemove: jest.fn(),
+      recover: jest.fn(),
+      reload: jest.fn(),
+    };
+
+    it('should return product with updated data', async () => {
+      jest.spyOn(productService, 'update').mockImplementation(
+        (id, objToUpdate) =>
+          new Promise((resolve, reject) => {
+            return resolve(updatedObject);
+          }),
+      );
+
+      expect(
+        productController.update(firstMockProduct.id, toUpdate),
+      ).resolves.toBe(updatedObject);
+    });
+
+    it('should return 404 error when product with gicen id is not found', () => {
+      jest.spyOn(productService, 'update').mockImplementation(
+        (id, objToUpdate) =>
+          new Promise((resolve, reject) => {
+            return reject(NOT_FOUND_EXCEPTION_RESPONSE);
+          }),
+      );
+
+      expect(productController.update('wrong-id', toUpdate)).rejects.toBe(
+        NOT_FOUND_EXCEPTION_RESPONSE,
+      );
+    });
+
+    it('should return 400 error when wrong input value is provided', () => {
+      toUpdate = {
+        ...toUpdate,
+        dummy: 'dummy-value',
+      } as unknown as UpdateProductDto;
+
+      jest.spyOn(productService, 'update').mockImplementation(
+        (id, objToUpdate) =>
+          new Promise((resolve, reject) => {
+            return reject(BAD_REQUEST_EXCEPTION_RESPONSE);
+          }),
+      );
+
+      expect(
+        productController.update(firstMockProduct.id, toUpdate),
+      ).rejects.toBe(BAD_REQUEST_EXCEPTION_RESPONSE);
     });
   });
 });

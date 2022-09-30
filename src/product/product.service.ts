@@ -1,6 +1,10 @@
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/types';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Like } from 'typeorm';
 import { DEFAULT_PRODUCT_SKIP, DEFAULT_PRODUCT_TAKE } from '../utils/constants';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -44,7 +48,11 @@ export class ProductService {
   }
 
   async findOne(id: string): Promise<Product> {
-    return await Product.findOne({ where: { id } });
+    const product = await Product.findOne({ where: { id } });
+
+    if (!product) throw new NotFoundException();
+
+    return product;
   }
 
   async update(
@@ -52,8 +60,15 @@ export class ProductService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const product = await Product.findOne({ where: { id } });
-    Object.seal(product);
-    Object.assign(product, updateProductDto);
+
+    if (!product) throw new NotFoundException();
+
+    try {
+      Object.seal(product);
+      Object.assign(product, updateProductDto);
+    } catch (e) {
+      throw new BadRequestException();
+    }
 
     await product.save();
     return product;

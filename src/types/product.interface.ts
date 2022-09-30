@@ -3,7 +3,7 @@ import { EntityTracker } from './entity.interface';
 export interface CreateProduct {
   name: string;
   price: number;
-  promotionPrice: number | null;
+  promotionPrice?: number;
   description?: string;
   isAvailable?: boolean;
 }
