@@ -6,6 +6,12 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
+import {
+  BAD_REQUEST_EXCEPTION_RESPONSE,
+  INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE,
+  NOT_FOUND_EXCEPTION_RESPONSE,
+  UNAUTHORIZED_EXCEPTION_RESPONSE,
+} from '../utils/http-exception-responses';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -20,18 +26,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let message;
 
     switch (status) {
-      case HttpStatus.NOT_FOUND:
-        message = 'Nie odnaleziono zasobu';
+      case NOT_FOUND_EXCEPTION_RESPONSE.status:
+        message = NOT_FOUND_EXCEPTION_RESPONSE.message;
         break;
-      case HttpStatus.BAD_REQUEST:
-        message = 'Nieprawidłowe żądanie';
+      case BAD_REQUEST_EXCEPTION_RESPONSE.status:
+        message = BAD_REQUEST_EXCEPTION_RESPONSE.message;
         break;
-      case HttpStatus.UNAUTHORIZED:
-        message = 'Nie masz uprawnień do zasobu';
-      case HttpStatus.INTERNAL_SERVER_ERROR:
+      case UNAUTHORIZED_EXCEPTION_RESPONSE.status:
+        message = UNAUTHORIZED_EXCEPTION_RESPONSE.message;
+      case INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE.status:
       default:
-        message =
-          'Uuups.. coś poszło nie tak.. Spróbuj ponownie za kilka minut';
+        message = INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE.message;
     }
 
     console.log(`ERROR ${status}: ${exception}`);
