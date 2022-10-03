@@ -76,6 +76,9 @@ export class ProductService {
 
   async remove(id: string): Promise<void> {
     const product = await Product.findOne({ where: { id } });
+
+    if (!product) throw new NotFoundException();
+
     await product.remove();
   }
 

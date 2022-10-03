@@ -12,7 +12,6 @@ import {
   NOT_FOUND_EXCEPTION_RESPONSE,
 } from '../utils/http-exception-responses';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { SaveOptions, RemoveOptions } from 'typeorm';
 
 describe('ProductController', () => {
   let productService: ProductService;
@@ -287,6 +286,31 @@ describe('ProductController', () => {
       expect(
         productController.update(firstMockProduct.id, toUpdate),
       ).rejects.toBe(BAD_REQUEST_EXCEPTION_RESPONSE);
+    });
+  });
+
+  describe('DELETE /products/:id', () => {
+    it('should return empty response when product is deleted', () => {
+      jest
+        .spyOn(productService, 'remove')
+        .mockImplementation(
+          (id) => new Promise((resolve, reject) => resolve()),
+        );
+
+      expect(productController.remove(firstMockProduct.id)).resolves;
+    });
+
+    it('should return 404 when product is not found', () => {
+      jest.spyOn(productService, 'remove').mockImplementation(
+        (id) =>
+          new Promise((resolve, reject) => {
+            return reject(NOT_FOUND_EXCEPTION_RESPONSE);
+          }),
+      );
+
+      expect(productController.remove(firstMockProduct.id)).rejects.toBe(
+        NOT_FOUND_EXCEPTION_RESPONSE,
+      );
     });
   });
 });
