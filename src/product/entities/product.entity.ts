@@ -73,7 +73,7 @@ export class Product extends BaseEntity implements ProductI {
 
   @ManyToMany(() => Image, (entity) => entity.products, { eager: true })
   @JoinTable({
-    name: 'product-images',
+    name: 'product_images',
   })
   images: Image[];
 }
