@@ -4,10 +4,10 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 
 import { config } from '../config/config';
-import { AppService } from './app.service';
-import { AppController } from './app.controller';
 import { ProductModule } from '../product/product.module';
 import { ImageModule } from '../image/image.module';
+import { UserModule } from '../user/user.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -27,8 +27,8 @@ import { ImageModule } from '../image/image.module';
     }),
     ProductModule,
     ImageModule,
+    UserModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
