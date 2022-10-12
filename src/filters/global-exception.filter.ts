@@ -15,7 +15,7 @@ import {
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status =
@@ -25,21 +25,25 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     let message;
 
-    switch (status) {
-      case NOT_FOUND_EXCEPTION_RESPONSE.status:
-        message = NOT_FOUND_EXCEPTION_RESPONSE.message;
-        break;
-      case BAD_REQUEST_EXCEPTION_RESPONSE.status:
-        message = BAD_REQUEST_EXCEPTION_RESPONSE.message;
-        break;
-      case UNAUTHORIZED_EXCEPTION_RESPONSE.status:
-        message = UNAUTHORIZED_EXCEPTION_RESPONSE.message;
-      case INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE.status:
-      default:
-        message = INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE.message;
+    if (status < 500 && exception.message) message = exception.message;
+    else {
+      switch (status) {
+        case NOT_FOUND_EXCEPTION_RESPONSE.status:
+          message = NOT_FOUND_EXCEPTION_RESPONSE.message;
+          break;
+        case BAD_REQUEST_EXCEPTION_RESPONSE.status:
+          message = BAD_REQUEST_EXCEPTION_RESPONSE.message;
+          break;
+        case UNAUTHORIZED_EXCEPTION_RESPONSE.status:
+          message = UNAUTHORIZED_EXCEPTION_RESPONSE.message;
+        case INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE.status:
+        default:
+          message = INTERNAL_SERVER_ERROR_EXCEPTION_RESPONSE.message;
+      }
     }
 
     console.log(`ERROR ${status}: ${exception}`);
+    console.log(exception);
     response.status(status).json({
       status,
       message,
