@@ -4,11 +4,10 @@ import {
   Get,
   HttpStatus,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { config } from '../config/config';
 import { User } from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
