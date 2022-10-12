@@ -6,11 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Request } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -22,13 +23,13 @@ export class UserController {
   }
 
   @Get()
-  findAll(@Query('includeRoles') includeRoles: boolean) {
-    return this.userService.findAll(includeRoles);
+  findAll() {
+    return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+  findOne(@Param('id') id: string, @Req() request: Request) {
+    return this.userService.findOne({ id });
   }
 
   @Patch(':id')

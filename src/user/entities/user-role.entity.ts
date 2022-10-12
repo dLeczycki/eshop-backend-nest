@@ -1,10 +1,16 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Role } from '../role.enum';
 import { User } from './user.entity';
 
 @Entity()
 export class UserRole extends BaseEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => User, (entity) => entity.roles, {
@@ -15,6 +21,7 @@ export class UserRole extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Role,
+    nullable: false,
   })
   role: Role;
 }

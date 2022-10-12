@@ -6,12 +6,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User as UserI } from '../../types';
-import { Role } from '../role.enum';
+import { UserEntity } from '../../types';
 import { UserRole } from './user-role.entity';
 
 @Entity()
-export class User extends BaseEntity implements UserI {
+export class User extends BaseEntity implements UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,7 +23,14 @@ export class User extends BaseEntity implements UserI {
   @Column()
   passwordHash: string;
 
-  @OneToMany(() => UserRole, (entity) => entity.user)
-  @JoinColumn()
-  roles: Role[];
+  @Column({
+    default: null,
+  })
+  tokenId: string | null;
+
+  @OneToMany(() => UserRole, (entity) => entity.user, { eager: true })
+  @JoinColumn({
+    name: 'roles',
+  })
+  roles: UserRole[];
 }
